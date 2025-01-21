@@ -1,0 +1,48 @@
+DATASET:
+  TEST_SET: "eval/eval.json"
+  METRIC: 'area'
+  TRAIN_VAL_TEST_SPLIT: [0.98, 0.01, 0.01]
+
+tokenizer:
+  padding_side: 'right'
+  use_fast: True 
+
+LLM:
+  NAME: 'mixtral'
+  TEMP: 0.2
+
+
+lora:
+  lora_r: 128 
+  lora_alpha: 64 
+  lora_dropout: 0.1 
+  use_dora: False 
+  
+bnb: 
+  load_in_4bit: True 
+  bnb_4bit_quant_type: "nf4"
+  bnb_4bit_use_double_quant: True 
+  
+train:
+  epochs: 10
+  max_steps: -1                # make it -1 to use epochs
+  max_seq_length: 1048
+  batch_size: 4               
+  gradient_accumulation_steps: 16  # your effective batch size is batch_size*gradient_accumulation_steps
+  learning_rate: 0.00002 
+  report_to: "wandb"
+  gradient_checkpointing: True   ## Leads to reduction in memory but slows down training by 20% 
+  dataloader_num_workers: 0
+  evaluation_strategy: 'steps'
+  logging_strategy: 'steps'
+  save_strategy: 'steps'
+  logging_steps: 1
+  eval_steps: 100
+  save_steps: 100
+  load_best_model_at_end: True
+  lr_scheduler_type: 'linear'
+  run_name: mixtral_r128
+
+test:
+  batch_size: 4
+  num_samples: 10
